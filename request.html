@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request an Item | Shop N Ship</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+<header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span class="brand-mark">S</span><span>Shop N Ship</span></a><nav class="nav-links"><a href="index.html#how-it-works">How it works</a><a href="orders.html">Track order</a><a href="admin.html">Admin demo</a></nav><a class="button button-secondary nav-cta" href="index.html">Home</a></div></header>
+<main class="page-shell">
+  <div class="container narrow">
+    <div class="page-heading"><span class="eyebrow">Product request</span><h1>What do you want from America?</h1><p>Paste a link, upload a screenshot, or enter the details manually. We’ll turn it into a quote.</p></div>
+    <form id="requestForm" class="card form-card">
+      <div class="form-grid two-col">
+        <label><span>Request type</span><select name="requestType" required><option value="URL_REQUEST">Product link</option><option value="IMAGE_REQUEST">Screenshot / image</option><option value="MANUAL_REQUEST">Manual request</option></select></label>
+        <label><span>Retailer</span><select name="retailer" id="retailerSelect" required></select></label>
+      </div>
+      <label><span>Product URL</span><input name="url" type="url" placeholder="https://www.bestbuy.com/..." /></label>
+      <label><span>Product name</span><input name="productName" required placeholder="e.g. Sony WH-1000XM6 headphones" /></label>
+      <div class="form-grid three-col"><label><span>Quantity</span><input name="quantity" type="number" min="1" value="1" required /></label><label><span>Size / model</span><input name="variant" placeholder="Size 10 / 256GB" /></label><label><span>Color</span><input name="color" placeholder="Black" /></label></div>
+      <div class="form-grid two-col"><label><span>Maximum budget (USD)</span><input name="maxBudget" type="number" min="0" step="0.01" placeholder="500" /></label><label><span>Product screenshot</span><input name="image" type="file" accept="image/*" /></label></div>
+      <label><span>Notes</span><textarea name="notes" rows="4" placeholder="Anything the shopper should know..."></textarea></label>
+      <hr />
+      <div class="form-grid two-col"><label><span>Full name</span><input name="customerName" required placeholder="Your name" /></label><label><span>Email</span><input name="email" type="email" required placeholder="you@example.com" /></label><label><span>Phone / WhatsApp</span><input name="phone" required placeholder="+1 242 ..." /></label><label><span>Delivery area</span><select name="deliveryArea" required><option>Nassau / New Providence</option><option disabled>Freeport — coming later</option><option disabled>Family Islands — coming later</option></select></label></div>
+      <label><span>Delivery address</span><textarea name="address" rows="3" required placeholder="Street, neighborhood, landmarks"></textarea></label>
+      <div class="form-actions"><button class="button button-primary button-lg" type="submit">Submit request</button><span class="fine-print">No payment is collected at request stage.</span></div>
+    </form>
+    <div id="successPanel" class="card success-panel hidden" aria-live="polite"></div>
+  </div>
+</main>
+<footer class="footer"><div class="container footer-wrap"><div><strong>Shop N Ship</strong><span>South Florida → Nassau</span></div></div></footer>
+<script src="assets/data.js"></script><script src="assets/common.js"></script><script src="assets/request.js"></script>
+</body></html>
