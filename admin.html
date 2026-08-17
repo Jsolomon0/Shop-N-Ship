@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Admin Demo | Shop N Ship</title><link rel="stylesheet" href="assets/styles.css" /></head>
+<body class="admin-body">
+<header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span class="brand-mark">S</span><span>Shop N Ship</span></a><nav class="nav-links"><a href="request.html">Customer request</a><a href="orders.html">Customer tracking</a></nav><span class="demo-badge">MVP Admin Demo</span></div></header>
+<main class="admin-shell container">
+  <div class="admin-heading"><div><span class="eyebrow">Operations command center</span><h1>Orders &amp; quotes</h1><p>Demo-only operations console. Data is stored in this browser.</p></div><button id="resetData" class="button button-secondary">Reset demo data</button></div>
+  <section id="metricGrid" class="metric-grid"></section>
+  <section class="admin-grid">
+    <div class="card order-list-card"><div class="panel-title"><div><span class="eyebrow">Order queue</span><h2>Active work</h2></div><select id="statusFilter"><option value="ALL">All statuses</option></select></div><div id="adminOrderList" class="admin-order-list"></div></div>
+    <div class="card detail-card" id="detailCard"><div class="empty-state"><h3>Select an order</h3><p>Choose a request or order to prepare a quote and update the fulfillment status.</p></div></div>
+  </section>
+</main>
+<script src="assets/data.js"></script><script src="assets/common.js"></script><script src="assets/admin.js"></script>
+</body></html>
