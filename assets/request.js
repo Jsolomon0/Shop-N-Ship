@@ -1,6 +1,15 @@
 const retailerSelect = document.getElementById('retailerSelect');
 retailerSelect.innerHTML = '<option value="">Choose a retailer</option>' + SNS_RETAILERS.map(r => `<option>${r.name}</option>`).join('');
 
+const catalogParams = new URLSearchParams(location.search);
+const catalogSku = catalogParams.get('sku') || '';
+const prefillRetailer = catalogParams.get('retailer');
+const prefillProduct = catalogParams.get('product');
+const prefillPrice = catalogParams.get('price');
+if (prefillRetailer && [...retailerSelect.options].some(o => o.value === prefillRetailer)) retailerSelect.value = prefillRetailer;
+if (prefillProduct) document.querySelector('[name="productName"]').value = prefillProduct;
+if (prefillPrice) document.querySelector('[name="maxBudget"]').value = prefillPrice;
+
 document.getElementById('requestForm').addEventListener('submit', event => {
   event.preventDefault();
   const form = event.currentTarget;
@@ -8,6 +17,7 @@ document.getElementById('requestForm').addEventListener('submit', event => {
   const orders = loadOrders();
   const order = {
     id: nextOrderId(orders),
+    catalogSku,
     requestType: data.get('requestType'),
     retailer: data.get('retailer'),
     url: data.get('url'),
