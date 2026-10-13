@@ -135,3 +135,8 @@ Highest-priority upgrades after validating the customer journey:
 Duty, VAT, customs fees, and local price comparisons in the MVP are estimates entered by an operator. The MVP deliberately does not hard-code legal or customs treatment for broad product categories.
 
 Before production use, verify current Bahamian customs classifications, VAT treatment, import restrictions, licensing requirements, and U.S. sales-tax/resale-certificate treatment with qualified professionals and official authorities.
+
+
+## Catalog
+
+The MVP now includes a 300-item starter catalog at `/catalog.html` with retailer/category/shipping filters, a provisional landed-cost estimator, internal catalog SKUs, and a tiered Shop N Ship service-fee model. See `docs/CATALOG_ARCHITECTURE.md` for the normalized production schema and launch assumptions.
