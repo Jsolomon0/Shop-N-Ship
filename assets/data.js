@@ -11,7 +11,15 @@ const SNS_RETAILERS = [
   { name: 'Home Depot', initials: 'HD', note: 'Home improvement' },
   { name: 'BrandsMart USA', initials: 'BM', note: 'Electronics & appliances' },
   { name: 'Burlington', initials: 'BL', note: 'Off-price fashion & home' },
+  { name: 'Ross', initials: 'RS', note: 'Off-price fashion & home' },
   { name: "Sam's Club", initials: 'SC', note: 'Bulk & household' },
+  { name: 'Costco', initials: 'CO', note: 'Membership warehouse' },
+  { name: 'Foot Locker', initials: 'FL', note: 'Sneakers & sportswear' },
+  { name: 'Ulta', initials: 'UL', note: 'Beauty & personal care' },
+  { name: 'TJ Maxx', initials: 'TJ', note: 'Off-price fashion & home' },
+  { name: 'Marshalls', initials: 'MH', note: 'Off-price fashion & home' },
+  { name: 'IKEA', initials: 'IK', note: 'Furniture & home' },
+  { name: 'Wayfair', initials: 'WF', note: 'Furniture & home' },
   { name: 'Other U.S. retailer', initials: '+', note: 'Request another store' }
 ];
 
