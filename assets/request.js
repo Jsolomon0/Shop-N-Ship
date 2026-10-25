@@ -6,9 +6,11 @@ const catalogSku = catalogParams.get('sku') || '';
 const prefillRetailer = catalogParams.get('retailer');
 const prefillProduct = catalogParams.get('product');
 const prefillPrice = catalogParams.get('price');
+const prefillUrl = catalogParams.get('url');
 if (prefillRetailer && [...retailerSelect.options].some(o => o.value === prefillRetailer)) retailerSelect.value = prefillRetailer;
 if (prefillProduct) document.querySelector('[name="productName"]').value = prefillProduct;
 if (prefillPrice) document.querySelector('[name="maxBudget"]').value = prefillPrice;
+if (prefillUrl) document.querySelector('[name="url"]').value = prefillUrl;
 
 document.getElementById('requestForm').addEventListener('submit', event => {
   event.preventDefault();
