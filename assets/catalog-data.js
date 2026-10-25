@@ -1,132 +1,70 @@
-const SNS_CATALOG_POLICY = {
-  currency: 'USD',
+const SNS_LIVE_CATALOG_POLICY = {
   vatRatePct: 10,
-  customsProcessing: { ratePct: 1, minimum: 10, maximum: 1000, scope: 'shipment' },
+  processingFee: { ratePct: 1, minimum: 10, maximum: 1000 },
+  airFreight: { perLb: 7.5, minimum: 15 },
+  localDelivery: { standard: 12, oversized: 25 },
   serviceFeeTiers: [
     { max: 99.99, pct: 15, minimum: 10 },
     { max: 499.99, pct: 12, minimum: 12 },
     { max: 999.99, pct: 9, minimum: 18 },
     { max: Infinity, pct: 6, minimum: 35 }
-  ],
-  shopperStoreFee: 8,
-  localDelivery: { standard: 12, oversized: 25 },
-  freight: {
-    air: { perLb: 7.5, minimum: 15 },
-    ocean: { perCubicFt: 18, minimum: 25 }
-  },
-  notes: [
-    'Catalog prices are launch estimates, not guaranteed retailer prices.',
-    'Final retailer price is re-verified before purchase.',
-    'Customs classification and fees are provisional until final shipment review.',
-    'Processing fees are assessed at shipment/declaration level; catalog estimates assume a standalone item.'
   ]
 };
 
-const SNS_CATALOG_GROUPS = [
-  { category:'Phones & Tablets', count:20, retailers:['Apple','Best Buy','Walmart','Amazon','Costco',"Sam's Club"], names:['Unlocked smartphone 128GB','Unlocked smartphone 256GB','Premium smartphone 256GB','Tablet 10–11 inch Wi-Fi','Tablet 12–13 inch Wi-Fi'], basePrice:399, step:90, weightLb:1.6, dims:[11,8,4], ship:'AIR', hs:'8517', duty:10, levy:5, confidence:'MEDIUM', mode:'ONLINE' },
-  { category:'Computers & Accessories', count:28, retailers:['Best Buy','Amazon','Walmart','Costco','BrandsMart USA'], names:['13-inch laptop','15-inch laptop','Business laptop','Gaming laptop','27-inch monitor','Wireless keyboard & mouse','USB-C dock','External SSD 1TB'], basePrice:79, step:85, weightLb:6, dims:[18,14,5], ship:'AIR', hs:'8471', duty:0, levy:0, confidence:'HIGH', mode:'ONLINE' },
-  { category:'Televisions', count:12, retailers:['BrandsMart USA','Best Buy','Walmart','Costco',"Sam's Club"], names:['43-inch 4K Smart TV','50-inch 4K Smart TV','55-inch 4K Smart TV','65-inch 4K Smart TV'], basePrice:249, step:100, weightLb:38, dims:[58,36,7], ship:'OCEAN', hs:'8528', duty:35, levy:5, confidence:'MEDIUM', mode:'QUOTE_REQUIRED' },
-  { category:'Streaming & Smart Audio', count:8, retailers:['Amazon','Best Buy','Walmart'], names:['4K streaming stick','Streaming TV box','Smart speaker','Smart display'], basePrice:39, step:35, weightLb:2.2, dims:[10,8,5], ship:'AIR', hs:'8525', duty:0, levy:0, confidence:'HIGH', mode:'ONLINE' },
-  { category:'Gaming', count:16, retailers:['Best Buy','Walmart','Amazon','Target','Costco'], names:['Current-generation game console','Handheld game console','VR headset','Wireless game controller','Gaming headset'], basePrice:79, step:95, weightLb:8, dims:[18,14,8], ship:'AIR', hs:'9504', duty:45, levy:0, confidence:'HIGH', mode:'ONLINE' },
-  { category:'Cameras & Smart Home', count:18, retailers:['Amazon','Best Buy','Walmart','Home Depot'], names:['Wi-Fi security camera','Video doorbell','Smart alarm kit','Digital camera','Outdoor camera kit','Smart thermostat'], basePrice:59, step:55, weightLb:3, dims:[12,9,6], ship:'AIR', hs:'8525', duty:0, levy:0, confidence:'HIGH', mode:'ONLINE' },
-  { category:'Home & Kitchen', count:28, retailers:['Walmart','Amazon','Target','Costco',"Sam's Club",'Burlington','Ross'], names:['Air fryer','Countertop blender','Coffee maker','Cookware set','Rice cooker','Toaster oven','Food processor','Vacuum cleaner'], basePrice:39, step:40, weightLb:12, dims:[18,16,14], ship:'BOTH', hs:'8509', duty:35, levy:0, confidence:'LOW', mode:'ONLINE' },
-  { category:'Major Appliances & Climate', count:16, retailers:['Home Depot','BrandsMart USA','Costco',"Sam's Club"], names:['Window air conditioner','Portable air conditioner','Fully automatic washer','Electric dryer','Chest freezer','Compact refrigerator'], basePrice:299, step:140, weightLb:95, dims:[32,30,38], ship:'OCEAN', hs:'8415', duty:5, levy:10, confidence:'MEDIUM', mode:'QUOTE_REQUIRED' },
-  { category:'Fashion', count:38, retailers:['Burlington','Ross','Walmart','Target',"Macy's",'Nordstrom','TJ Maxx','Marshalls'], names:["Women's dress","Women's handbag","Men's polo shirt","Men's jeans","Women's activewear set","Men's dress shirt","Kids clothing set",'Luggage carry-on'], basePrice:24, step:18, weightLb:2.5, dims:[16,12,5], ship:'AIR', hs:'6110', duty:20, levy:0, confidence:'MEDIUM', mode:'SHOPPER' },
-  { category:'Shoes & Sneakers', count:22, retailers:['Nike','Foot Locker','Burlington','Ross','Walmart',"Macy's",'Nordstrom'], names:['Running shoes','Basketball sneakers','Casual sneakers','Dress shoes','Sandals','Kids sneakers'], basePrice:39, step:28, weightLb:3, dims:[14,10,6], ship:'AIR', hs:'6404', duty:20, levy:0, confidence:'LOW', mode:'SHOPPER' },
-  { category:'Beauty & Personal Care', count:18, retailers:['Sephora','Ulta','Walmart','Target','Burlington','Ross'], names:['Skincare set','Makeup set','Hair styling tool','Fragrance set','Electric toothbrush','Hair care bundle'], basePrice:29, step:24, weightLb:2, dims:[11,8,5], ship:'AIR', hs:'3304', duty:20, levy:0, confidence:'LOW', mode:'SHOPPER' },
-  { category:'Baby & Kids', count:24, retailers:['Walmart','Target','Amazon','Costco',"Sam's Club"], names:['Diaper case','Baby wipes case','Convertible car seat','Baby stroller','High chair','Playpen / travel crib','Baby bottle set','Toddler clothing bundle'], basePrice:29, step:35, weightLb:12, dims:[20,16,12], ship:'BOTH', hs:'9401', duty:0, levy:0, confidence:'HIGH', mode:'ONLINE' },
-  { category:'Tools & Home Improvement', count:20, retailers:['Home Depot','Amazon','Walmart'], names:['Cordless drill kit','Hand tool set','Circular saw','Impact driver','Smart lock','Plumbing fixture set','LED work light'], basePrice:49, step:45, weightLb:10, dims:[18,12,8], ship:'BOTH', hs:'8205', duty:25, levy:0, confidence:'HIGH', mode:'ONLINE' },
-  { category:'Bulk Household', count:16, retailers:["Sam's Club",'Costco','Walmart','Amazon'], names:['Toilet paper case','Paper towel case','Laundry detergent pack','Dishwashing supply pack','Personal care multipack','Cleaning supplies bundle'], basePrice:24, step:18, weightLb:18, dims:[22,18,15], ship:'OCEAN', hs:'4818', duty:10, levy:0, confidence:'LOW', mode:'ONLINE' },
-  { category:'Furniture & Décor', count:16, retailers:['IKEA','Wayfair','Target','Home Depot','Costco',"Sam's Club",'Burlington','Ross'], names:['Accent chair','Nightstand','Storage cabinet','Area rug','Desk','Bar stool set','Bedding set','Floor lamp'], basePrice:49, step:55, weightLb:34, dims:[28,24,20], ship:'OCEAN', hs:'9403', duty:25, levy:0, confidence:'LOW', mode:'QUOTE_REQUIRED' }
+const SNS_CUSTOMS_PROFILES = [
+  { test:/\b(cell(ular)? phone|smartphone|iphone)\b/i, hs:'8517', label:'Cellular telephone', dutyPct:10, levy:5, confidence:'HIGH' },
+  { test:/\btelevision|\btv\b/i, hs:'8528', label:'Television', dutyPct:35, levy:5, confidence:'HIGH' },
+  { test:/\b(computer monitor|display monitor)\b/i, hs:'8471', label:'Computer monitor', dutyPct:0, levy:0, confidence:'HIGH' },
+  { test:/\b(usb cable|usb-c|keyboard|mouse|computer accessory|dock|docking station)\b/i, hs:'8471', label:'Computer accessory', dutyPct:0, levy:0, confidence:'MEDIUM' },
+  { test:/\b(digital camera|camera)\b/i, hs:'8525', label:'Digital camera', dutyPct:0, levy:0, confidence:'MEDIUM' },
+  { test:/\b(security camera|surveillance camera|video doorbell|security system)\b/i, hs:'8525', label:'Surveillance/security system', dutyPct:0, levy:0, confidence:'MEDIUM' },
+  { test:/\bbluetooth speaker\b/i, hs:'8518', label:'Bluetooth speaker', dutyPct:0, levy:0, confidence:'HIGH' },
+  { test:/\b(fire tv|fire stick|streaming stick|apple tv|android tv)\b/i, hs:'8525', label:'Streaming/TV box', dutyPct:0, levy:0, confidence:'MEDIUM' },
+  { test:/\bwindow air conditioner|window a\/c|wall air conditioner\b/i, hs:'8415', label:'Wall/window air conditioner', dutyPct:5, levy:10, confidence:'HIGH' },
+  { test:/\brefrigerator\b/i, hs:'8418', label:'Refrigerator', dutyPct:0, levy:15, confidence:'HIGH' },
+  { test:/\btoaster\b/i, hs:'8516', label:'Toaster', dutyPct:35, levy:0, confidence:'HIGH' },
+  { test:/\bcoffee maker\b/i, hs:'8416', label:'Coffee maker', dutyPct:35, levy:0, confidence:'HIGH' },
+  { test:/\bshampoo\b/i, hs:'3305', label:'Shampoo', dutyPct:25, levy:0, confidence:'HIGH' },
+  { test:/\b(sneaker|tennis shoe|running shoe)\b/i, hs:'6404', label:'Tennis shoes', dutyPct:20, levy:0, confidence:'MEDIUM' }
 ];
 
-function snsRoundMoney(value) {
+function snsLiveRound(value) {
   return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
 }
 
-function snsServiceFee(merchandise) {
-  const tier = SNS_CATALOG_POLICY.serviceFeeTiers.find(t => merchandise <= t.max) || SNS_CATALOG_POLICY.serviceFeeTiers.at(-1);
-  return snsRoundMoney(Math.max(tier.minimum, merchandise * (tier.pct / 100)));
+function snsLiveServiceFee(price) {
+  const tier = SNS_LIVE_CATALOG_POLICY.serviceFeeTiers.find(t => price <= t.max) || SNS_LIVE_CATALOG_POLICY.serviceFeeTiers.at(-1);
+  return snsLiveRound(Math.max(tier.minimum, price * (tier.pct / 100)));
 }
 
-function snsEstimateFreight(item, mode) {
-  if (mode === 'AIR') {
-    return snsRoundMoney(Math.max(SNS_CATALOG_POLICY.freight.air.minimum, item.weightLb * SNS_CATALOG_POLICY.freight.air.perLb));
+function snsCustomsProfile(item) {
+  const haystack = [item.name, item.description, ...(item.categoryPath || []).map(x => typeof x === 'string' ? x : x.name)].filter(Boolean).join(' ');
+  const match = SNS_CUSTOMS_PROFILES.find(p => p.test.test(haystack));
+  return match ? { ...match, status:'PROVISIONAL', source:'Bahamas Customs Frequently Imported Items 2024' } : null;
+}
+
+function snsEstimateLiveOffer(item) {
+  const price = Number(item.usPrice || 0);
+  if (!price) return { complete:false, reason:'PRICE_MISSING' };
+  const customs = snsCustomsProfile(item);
+  const serviceFee = snsLiveServiceFee(price);
+  const processing = snsLiveRound(Math.max(SNS_LIVE_CATALOG_POLICY.processingFee.minimum, Math.min(SNS_LIVE_CATALOG_POLICY.processingFee.maximum, price * .01)));
+  const delivery = item.transportRecommendation === 'OCEAN_RECOMMENDED' ? SNS_LIVE_CATALOG_POLICY.localDelivery.oversized : SNS_LIVE_CATALOG_POLICY.localDelivery.standard;
+
+  let freight = null;
+  let freightBasis = null;
+  if (item.transportRecommendation !== 'OCEAN_RECOMMENDED' && Number(item.shippingWeightLb) > 0) {
+    freight = snsLiveRound(Math.max(SNS_LIVE_CATALOG_POLICY.airFreight.minimum, Number(item.shippingWeightLb) * SNS_LIVE_CATALOG_POLICY.airFreight.perLb));
+    freightBasis = 'AIR_WEIGHT_ESTIMATE';
   }
-  const cubicFt = (item.lengthIn * item.widthIn * item.heightIn) / 1728;
-  return snsRoundMoney(Math.max(SNS_CATALOG_POLICY.freight.ocean.minimum, cubicFt * SNS_CATALOG_POLICY.freight.ocean.perCubicFt));
-}
 
-function snsEstimateLanded(item, preferredMode) {
-  const mode = preferredMode || (item.shippingEligibility === 'OCEAN' ? 'OCEAN' : 'AIR');
-  const freight = snsEstimateFreight(item, mode);
-  const duty = snsRoundMoney(item.usPrice * (item.dutyRatePct / 100));
-  const processing = snsRoundMoney(Math.max(
-    SNS_CATALOG_POLICY.customsProcessing.minimum,
-    Math.min(SNS_CATALOG_POLICY.customsProcessing.maximum, item.usPrice * (SNS_CATALOG_POLICY.customsProcessing.ratePct / 100))
-  ));
-  const vatBase = item.usPrice + freight + duty + item.environmentalLevy + processing;
-  const vat = snsRoundMoney(vatBase * (SNS_CATALOG_POLICY.vatRatePct / 100));
-  const serviceFee = snsServiceFee(item.usPrice);
-  const shopperFee = item.sourcingMode === 'SHOPPER' ? SNS_CATALOG_POLICY.shopperStoreFee : 0;
-  const localDelivery = item.oversized ? SNS_CATALOG_POLICY.localDelivery.oversized : SNS_CATALOG_POLICY.localDelivery.standard;
-  const delivered = snsRoundMoney(item.usPrice + freight + duty + item.environmentalLevy + processing + vat + serviceFee + shopperFee + localDelivery);
-  return { mode, freight, duty, processing, vat, serviceFee, shopperFee, localDelivery, delivered };
+  const duty = customs ? snsLiveRound(price * customs.dutyPct / 100) : null;
+  const levy = customs ? customs.levy : null;
+  if (!customs || freight === null) {
+    return { complete:false, customs, serviceFee, processing, delivery, freight, freightBasis, reason:!customs ? 'CUSTOMS_CLASSIFICATION_REQUIRED' : 'FREIGHT_QUOTE_REQUIRED' };
+  }
+  const vatBase = price + freight + duty + levy + processing;
+  const vat = snsLiveRound(vatBase * SNS_LIVE_CATALOG_POLICY.vatRatePct / 100);
+  const delivered = snsLiveRound(price + freight + duty + levy + processing + vat + serviceFee + delivery);
+  return { complete:true, customs, freight, freightBasis, duty, levy, processing, vat, serviceFee, delivery, delivered };
 }
-
-function snsBuildCatalog() {
-  const items = [];
-  let sequence = 1;
-  SNS_CATALOG_GROUPS.forEach((group, groupIndex) => {
-    for (let i = 0; i < group.count; i++) {
-      const retailer = group.retailers[i % group.retailers.length];
-      const baseName = group.names[i % group.names.length];
-      const cycle = Math.floor(i / group.names.length);
-      const price = snsRoundMoney(group.basePrice + ((i % 5) * group.step) + (cycle * Math.max(5, group.step * 0.22)));
-      const weightMultiplier = 1 + ((i % 4) * 0.08);
-      const dimsMultiplier = 1 + ((i % 3) * 0.05);
-      const sourcingMode = ['Burlington','Ross','TJ Maxx','Marshalls'].includes(retailer) ? 'SHOPPER' : group.mode;
-      const oversized = group.ship === 'OCEAN' && (group.weightLb >= 30 || group.dims[0] >= 28);
-      const sku = 'SNS-' + String(sequence).padStart(4,'0');
-      const item = {
-        id: sku,
-        catalogSku: sku,
-        retailerSku: null,
-        retailer,
-        name: baseName + (cycle ? ' — option ' + (cycle + 1) : ''),
-        category: group.category,
-        imageUrl: 'assets/catalog-placeholder.svg',
-        imageStatus: 'PLACEHOLDER',
-        sourceUrl: null,
-        usPrice: price,
-        priceStatus: sourcingMode === 'SHOPPER' ? 'SHOPPER_CONFIRM' : 'ESTIMATE',
-        priceUpdatedAt: '2026-10-13',
-        weightLb: snsRoundMoney(group.weightLb * weightMultiplier),
-        lengthIn: snsRoundMoney(group.dims[0] * dimsMultiplier),
-        widthIn: snsRoundMoney(group.dims[1] * dimsMultiplier),
-        heightIn: snsRoundMoney(group.dims[2] * dimsMultiplier),
-        shippingEligibility: group.ship,
-        sourcingMode,
-        oversized,
-        customs: {
-          hsCode: group.hs,
-          description: group.category,
-          classificationStatus: 'PROVISIONAL',
-          confidence: group.confidence,
-          dutyRatePct: group.duty,
-          environmentalLevy: group.levy,
-          vatRatePct: SNS_CATALOG_POLICY.vatRatePct
-        },
-        dutyRatePct: group.duty,
-        environmentalLevy: group.levy,
-        tags: [group.category, retailer, sourcingMode, group.ship]
-      };
-      item.estimate = snsEstimateLanded(item);
-      items.push(item);
-      sequence++;
-    }
-  });
-  return items;
-}
-
-const SNS_CATALOG = snsBuildCatalog();
