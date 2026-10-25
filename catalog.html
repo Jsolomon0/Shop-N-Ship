@@ -3,55 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Browse the Shop N Ship starter catalog for U.S. products delivered to Nassau." />
-  <title>Catalog | Shop N Ship</title>
+  <meta name="description" content="Browse live permitted retailer data for Shop N Ship requests to The Bahamas." />
+  <title>Live Catalog | Shop N Ship</title>
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
-<header class="site-header">
-  <div class="container nav-wrap">
-    <a class="brand" href="index.html"><span class="brand-mark">S</span><span>Shop N Ship</span></a>
-    <nav class="nav-links"><a href="catalog.html">Catalog</a><a href="index.html#stores">Stores</a><a href="orders.html">Track order</a><a href="admin.html">Admin demo</a></nav>
-    <a class="button button-primary nav-cta" href="request.html">Request any item</a>
-  </div>
-</header>
+<header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span class="brand-mark">S</span><span>Shop N Ship</span></a><nav class="nav-links"><a href="catalog.html">Live catalog</a><a href="index.html#stores">Stores</a><a href="orders.html">Track order</a><a href="admin.html">Admin demo</a></nav><a class="button button-primary nav-cta" href="request.html">Request any item</a></div></header>
 <main>
-  <section class="catalog-hero">
-    <div class="container">
-      <span class="eyebrow">300-item starter catalog</span>
-      <h1>Shop U.S. stores.<br><span>See the Bahamas estimate up front.</span></h1>
-      <p>Browse launch items from Walmart, Amazon, Best Buy, Home Depot, Burlington, BrandsMart, Ross, Sam's Club, Costco and more. Store prices and customs classifications are re-verified before purchase.</p>
-      <div class="catalog-disclaimer">MVP catalog estimates are planning prices—not guaranteed live retailer inventory or final Customs assessments.</div>
-    </div>
-  </section>
-  <section class="section catalog-section">
-    <div class="container">
-      <div class="catalog-toolbar card">
-        <div class="catalog-search"><label for="catalogSearch">Search catalog</label><input id="catalogSearch" placeholder="Search laptops, TVs, baby, Nike..." /></div>
-        <label>Store<select id="retailerFilter"></select></label>
-        <label>Category<select id="categoryFilter"></select></label>
-        <label>Shipping<select id="shippingFilter"></select></label>
-      </div>
-      <div class="catalog-results-head"><div><strong id="catalogCount"></strong><span> · Delivered-price estimates include the Shop N Ship fee.</span></div><a href="request.html">Can't find it? Request anything →</a></div>
-      <div id="catalogGrid" class="catalog-grid"></div>
-      <div id="pagination" class="pagination"></div>
-    </div>
-  </section>
-  <section class="section section-alt">
-    <div class="container split-card card">
-      <div><span class="eyebrow">How Shop N Ship earns</span><h2>Store price + transparent service.</h2><p>Merchandise is the shopping base. Shop N Ship charges a service fee for sourcing and operating the platform, plus a shopper-store fee when a physical shopper is required. Freight, Customs/VAT and Nassau delivery remain visible line items.</p></div>
-      <div class="feature-list">
-        <div><span>1</span><div><strong>Service fee</strong><p>Tiered by merchandise value so expensive electronics are not overcharged.</p></div></div>
-        <div><span>2</span><div><strong>Physical shopper fee</strong><p>Applied to Ross, Burlington, TJ Maxx and similar store-level sourcing.</p></div></div>
-        <div><span>3</span><div><strong>Shipping & delivery</strong><p>Quoted separately so customers understand the true landed cost.</p></div></div>
-      </div>
-    </div>
-  </section>
+<section class="catalog-hero"><div class="container"><span class="eyebrow">Live retailer catalog</span><h1>Real retailer offers.<br><span>No invented products.</span></h1><p>The catalog now reads approved retailer APIs or authorized product feeds. Prices, availability, images and identifiers come from the configured source. Shop N Ship still re-verifies the item before purchasing it on the customer's behalf.</p><div class="catalog-disclaimer">Package dimensions and Bahamas customs classification are shown only when the source supports them or a customs rule can be matched with confidence. Otherwise the order requires a freight/customs quote.</div></div></section>
+<section class="section catalog-section"><div class="container">
+  <div class="catalog-toolbar card"><div class="catalog-search"><label for="catalogSearch">Search live products</label><input id="catalogSearch" placeholder="Search iPhone, laptop, TV, security camera..." /></div><label>Live source<select id="sourceFilter"></select></label><div class="source-state"><span>Source status</span><div id="sourceStatus">Checking…</div></div></div>
+  <div class="catalog-results-head"><div><strong id="catalogCount">Loading…</strong><span> · Shop N Ship uses live data for discovery and confirms the final purchase price before checkout.</span></div><a href="request.html">Can't find it? Request anything →</a></div>
+  <div id="catalogGrid" class="catalog-grid"></div><div id="pagination" class="pagination"></div>
+  <div class="source-limitations card"><strong>Source limitations</strong><ul id="sourceLimitations"></ul></div>
+</div></section>
+<section class="section section-alt"><div class="container split-card card"><div><span class="eyebrow">Instacart-style shopping agent</span><h2>You choose it. We confirm it, buy it, and move it.</h2><p>The live catalog is discovery. Shop N Ship earns its service fee for sourcing and coordinating the purchase, while freight, Customs/VAT and Nassau delivery remain separately visible. Retailer data does not imply the retailer endorses Shop N Ship.</p></div><div class="feature-list"><div><span>1</span><div><strong>Live retailer data</strong><p>Current source price, image, SKU/UPC and availability when supplied.</p></div></div><div><span>2</span><div><strong>Price confirmation</strong><p>We re-check price and availability before committing customer funds.</p></div></div><div><span>3</span><div><strong>Cross-border fulfillment</strong><p>Freight and customs are calculated from verified shipment data rather than fake package dimensions.</p></div></div></div></div></section>
 </main>
-<footer class="footer"><div class="container footer-wrap"><div><strong>Shop N Ship</strong><span>Cross-border shopping marketplace MVP</span></div><div>South Florida → Nassau</div></div></footer>
-<script src="assets/data.js"></script>
-<script src="assets/common.js"></script>
-<script src="assets/catalog-data.js"></script>
-<script src="assets/catalog.js"></script>
-</body>
-</html>
+<footer class="footer"><div class="container footer-wrap"><div><strong>Shop N Ship</strong><span>Live cross-border shopping catalog</span></div><div>South Florida → Nassau</div></div></footer>
+<script src="assets/data.js"></script><script src="assets/common.js"></script><script src="assets/catalog-data.js"></script><script src="assets/catalog.js"></script>
+</body></html>
