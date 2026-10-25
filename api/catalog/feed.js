@@ -1,9 +1,21 @@
 'use strict';
 
 const SOURCES = {
-  brandsmart:{label:'BrandsMart USA',env:'BRANDSMART_FEED_URL'},
-  homedepot:{label:'Home Depot',env:'HOME_DEPOT_FEED_URL'},
-  walmart:{label:'Walmart',env:'WALMART_FEED_URL'}
+  brandsmart:{
+    label:'BrandsMart USA',env:'BRANDSMART_FEED_URL',integration:'AFFILIATE_PRODUCT_FEED',
+    freshnessHours:24,affiliateUse:'REFERRAL_DISCOVERY',procurementAuthorization:false,
+    sourcePolicy:'Use only the authorized affiliate feed and preserve retailer-provided product/deep links.'
+  },
+  homedepot:{
+    label:'Home Depot',env:'HOME_DEPOT_FEED_URL',integration:'IMPACT_DAILY_PRODUCT_FEED',
+    freshnessHours:36,affiliateUse:'REFERRAL_DISCOVERY',procurementAuthorization:false,
+    sourcePolicy:'Home Depot describes the feed as daily. Affiliate tracking links remain referral links, not purchase-agent authorization.'
+  },
+  walmart:{
+    label:'Walmart',env:'WALMART_FEED_URL',integration:'IMPACT_AFFILIATE_DATA_FEED',
+    freshnessHours:24,affiliateUse:'REFERRAL_DISCOVERY',procurementAuthorization:false,
+    sourcePolicy:'Walmart requires product information derived from its feed to be updated within 24 hours and prohibits redistribution of its datafeed.'
+  }
 };
 function clampInt(value,min,max,fallback){const n=Number.parseInt(value,10);return Number.isFinite(n)?Math.min(max,Math.max(min,n)):fallback;}
 function parseCsv(text){const rows=[];let row=[],field='',quoted=false;for(let i=0;i<text.length;i++){const ch=text[i];if(quoted){if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}else if(ch==='"')quoted=false;else field+=ch;}else if(ch==='"')quoted=true;else if(ch===','){row.push(field);field='';}else if(ch==='\n'){row.push(field.replace(/\r$/,''));rows.push(row);row=[];field='';}else field+=ch;}if(field.length||row.length){row.push(field);rows.push(row);}if(!rows.length)return[];const headers=rows[0].map(h=>h.trim());return rows.slice(1).filter(r=>r.some(v=>String(v).trim())).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??''])));}
@@ -26,7 +38,7 @@ function normalizeRow(row,source){
     source,sourceLabel:`${cfg.label} authorized feed`,retailer:cfg.label,retailerSku:sku,upc,gtin,
     modelNumber:first(row,['model_number','model','mpn']),manufacturer:first(row,['brand','manufacturer']),
     name:first(row,['title','name','product_name','productname']),description:first(row,['description','short_description','shortdescription']),
-    imageUrl:image,sourceUrl:first(row,['product_url','producturl','url','link','deeplink']),
+    imageUrl:image,sourceUrl:first(row,['deeplink','tracking_link','trackinglink','affiliate_link','affiliatelink','product_url','producturl','url','link']),
     usPrice:num(first(row,['sale_price','saleprice','price','current_price','currentprice'])),
     regularPrice:num(first(row,['regular_price','regularprice','msrp','list_price','listprice'])),
     priceUpdatedAt:first(row,['updated_at','updatedat','last_updated','lastupdated']),
@@ -38,6 +50,10 @@ function normalizeRow(row,source){
     dimensionsArePackageDimensions:explicitPackage,transportRecommendation:'MANUAL_REVIEW',transportReviewRequired:true,
     categoryPath:[first(row,['category','category_name','categoryname','department'])].filter(Boolean),
     commerceMode:'DISCOVERY_REQUEST',
+    affiliateUse:cfg.affiliateUse,
+    procurementAuthorization:cfg.procurementAuthorization,
+    sourceFreshnessHours:cfg.freshnessHours,
+    sourcePolicy:cfg.sourcePolicy,
     verification:{livePrice:true,liveAvailability:inventoryValue!==null,realImage:Boolean(image),retailerSku:Boolean(sku),upc:Boolean(upc||gtin),accuratePackageDimensions:explicitPackage}
   };
 }
@@ -50,13 +66,20 @@ module.exports=async function handler(req,res){
   if(!feedUrl)return res.status(503).json({error:'SOURCE_NOT_CONFIGURED',source,message:`${cfg.env} is not configured in Vercel.`});
   const page=clampInt(req.query.page,1,10000,1),pageSize=clampInt(req.query.pageSize,1,100,24),q=String(req.query.q||'').trim().toLowerCase();
   try{
+    const fetchedAt=new Date().toISOString();
     const response=await fetch(feedUrl,{headers:{Accept:'application/json,text/csv,text/plain;q=0.9,*/*;q=0.5'}});
     if(!response.ok)return res.status(502).json({error:'UPSTREAM_ERROR',source,status:response.status});
     const type=String(response.headers.get('content-type')||'').toLowerCase();const body=await response.text();let rows;
     if(type.includes('json')||body.trim().startsWith('[')||body.trim().startsWith('{')){const parsed=JSON.parse(body);rows=Array.isArray(parsed)?parsed:(parsed.products||parsed.items||parsed.data||[]);}else rows=parseCsv(body);
     let items=rows.map(r=>normalizeRow(r,source)).filter(x=>x.name&&x.usPrice!==null&&x.imageUrl);
+    items=items.map(item=>({...item,sourceFetchedAt:fetchedAt,freshnessStatus:'FRESH_FROM_LATEST_FETCH'}));
     if(q)items=items.filter(x=>[x.name,x.retailerSku,x.upc,x.gtin,x.manufacturer].filter(Boolean).join(' ').toLowerCase().includes(q));
     const total=items.length,from=(page-1)*pageSize;items=items.slice(from,from+pageSize);
-    return res.status(200).json({source,sourceLabel:`${cfg.label} authorized feed`,commerceMode:'DISCOVERY_REQUEST',page,totalPages:Math.max(1,Math.ceil(total/pageSize)),total,items});
+    return res.status(200).json({
+      source,sourceLabel:`${cfg.label} authorized feed`,commerceMode:'DISCOVERY_REQUEST',
+      integration:cfg.integration,affiliateUse:cfg.affiliateUse,procurementAuthorization:cfg.procurementAuthorization,
+      sourceFetchedAt:fetchedAt,freshnessHours:cfg.freshnessHours,sourcePolicy:cfg.sourcePolicy,
+      page,totalPages:Math.max(1,Math.ceil(total/pageSize)),total,items
+    });
   }catch(error){return res.status(502).json({error:'FEED_PARSE_OR_FETCH_ERROR',source,message:error.message});}
 };
