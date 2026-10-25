@@ -40,7 +40,11 @@ async function loadCatalog(){
     if(!r.ok){el.count.textContent='0 live offers';el.grid.innerHTML=`<div class="card empty-state catalog-empty"><h3>${escapeHtml(payload.error==='SOURCE_NOT_CONFIGURED'?'Source setup required':'Live source unavailable')}</h3><p>${escapeHtml(payload.message||'Configure this retailer source in Vercel and try again.')}</p></div>`;el.limitations.innerHTML='';return;}
     el.count.textContent=`${Number(payload.total||0).toLocaleString()} live offers available from source`;
     el.grid.innerHTML=(payload.items||[]).length?payload.items.map(productCard).join(''):'<div class="card empty-state catalog-empty"><h3>No live products found</h3><p>Try a different search.</p></div>';
-    el.limitations.innerHTML=(payload.sourceLimitations||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('');
+    const limits=[...(payload.sourceLimitations||[])];
+    if(payload.sourcePolicy) limits.unshift(payload.sourcePolicy);
+    if(payload.affiliateUse==='REFERRAL_DISCOVERY') limits.unshift('Affiliate feed content is used for product discovery/referral only; Shop N Ship procurement is a separate transaction unless the retailer grants written approval.');
+    if(payload.sourceFetchedAt) limits.push('Latest feed fetch: '+new Date(payload.sourceFetchedAt).toLocaleString()+'.');
+    el.limitations.innerHTML=limits.map(x=>`<li>${escapeHtml(x)}</li>`).join('');
     const pages=Number(payload.totalPages||1);state.page=Number(payload.page||state.page);
     if(pages>1)el.pagination.innerHTML=`<button class="button button-secondary" data-p="${Math.max(1,state.page-1)}" ${state.page<=1?'disabled':''}>Previous</button><span>Page ${state.page} of ${pages}</span><button class="button button-secondary" data-p="${Math.min(pages,state.page+1)}" ${state.page>=pages?'disabled':''}>Next</button>`;
     el.pagination.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>{state.page=Number(b.dataset.p);loadCatalog();window.scrollTo({top:document.querySelector('.catalog-toolbar').offsetTop-90,behavior:'smooth'});}));
