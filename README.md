@@ -78,7 +78,7 @@ This project is designed to work as a zero-build static deployment on Vercel.
 1. Import the GitHub repository into Vercel.
 2. Select **Other** if Vercel asks for a framework preset.
 3. No build command is required.
-4. No environment variables are required for this static MVP.
+4. The static shell needs no build command. Live catalog sources require Vercel environment variables such as `BESTBUY_API_KEY` and authorized feed URLs.
 5. Deploy.
 
 The included `vercel.json` enables clean URLs, so:
@@ -139,4 +139,4 @@ Before production use, verify current Bahamian customs classifications, VAT trea
 
 ## Catalog
 
-The MVP now includes a 300-item starter catalog at `/catalog.html` with retailer/category/shipping filters, a provisional landed-cost estimator, internal catalog SKUs, and a tiered Shop N Ship service-fee model. See `docs/CATALOG_ARCHITECTURE.md` for the normalized production schema and launch assumptions.
+The catalog at `/catalog.html` is now live-source only. The generated 300-item template catalog has been removed. Best Buy is wired through its official Products API, while BrandsMart, Home Depot, and Walmart have authorized-feed adapters that become active after their credentials/feed URLs are configured. See `docs/LIVE_CATALOG_SOURCES.md`.
