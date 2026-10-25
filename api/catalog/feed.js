@@ -57,9 +57,19 @@ function normalizeRow(row,source){
     verification:{livePrice:true,liveAvailability:inventoryValue!==null,realImage:Boolean(image),retailerSku:Boolean(sku),upc:Boolean(upc||gtin),accuratePackageDimensions:explicitPackage}
   };
 }
+function isSameOriginCatalogRequest(req){
+  const host=String(req.headers.host||'').split(':')[0].toLowerCase();
+  const secFetchSite=String(req.headers['sec-fetch-site']||'').toLowerCase();
+  if(secFetchSite==='same-origin'||secFetchSite==='same-site')return true;
+  const referer=String(req.headers.referer||'');
+  if(!referer||!host)return false;
+  try{return new URL(referer).hostname.toLowerCase()===host;}catch{return false;}
+}
 module.exports=async function handler(req,res){
-  res.setHeader('Cache-Control','s-maxage=300, stale-while-revalidate=900');
+  res.setHeader('Cache-Control','private, max-age=0, s-maxage=300, stale-while-revalidate=900');
+  res.setHeader('X-Robots-Tag','noindex, nofollow, noarchive');
   if(req.method!=='GET')return res.status(405).json({error:'METHOD_NOT_ALLOWED'});
+  if(!isSameOriginCatalogRequest(req))return res.status(403).json({error:'CATALOG_ORIGIN_REQUIRED',message:'Affiliate feed results are available only through the Shop N Ship storefront.'});
   const source=String(req.query.source||'').toLowerCase();const cfg=SOURCES[source];
   if(!cfg)return res.status(400).json({error:'UNKNOWN_SOURCE'});
   const feedUrl=process.env[cfg.env];
