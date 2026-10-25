@@ -1,3 +1,5 @@
+> **Status:** Superseded for the customer-facing catalog by `docs/LIVE_CATALOG_SOURCES.md`. The 300 generated offers described below were removed from the public storefront and replaced with live-source adapters. This document remains as the normalized production data-model reference.
+
 # Shop N Ship Catalog Architecture
 
 ## Objective
